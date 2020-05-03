@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><form class="bd-search d-flex align-items-center">
+  <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+  <button class="btn btn-link bd-search-docs-toggle d-md-none p-0 ml-3" type="button" data-toggle="collapse" data-target="#bd-docs-nav" aria-controls="bd-docs-nav" aria-expanded="false" aria-label="Toggle docs navigation">
+    {%- include icons/menu.svg width="30" height="30" -%}
+  </button>
+</form>
+
+<nav class="collapse bd-links" id="bd-docs-nav">
+  {%- assign page_slug = page.url | split: '/' | last -%}
+  {%- for group in site.data.nav -%}
+  {%- assign link = group.pages | first -%}
+  {%- assign link_slug = link.title | slugify -%}
+  {%- assign group_slug = group.title | slugify -%}
+  {%- assign active = nil -%}
+
+  {%- if page.group == group_slug -%}
+    {%- assign active = 'active' -%}
+  {%- endif -%}
+
+  <div class="bd-toc-item{% unless active == nil %} {{ active }}{% endunless %}">
+      <a class="bd-toc-link" href="%7B%7B%20site.baseurl%20%7D%7D/docs/%7B%7B%20site.docs_version%20%7D%7D/%7B%7B%20group_slug%20%7D%7D/%7B%7B%20link_slug%20%7D%7D%7B%%20if%20link_slug%20%%7D/%7B%%20endif%20%%7D">
+        {{ group.title }}
+      </a>
+
+      <ul class="nav bd-sidenav">
+        {%- for doc in group.pages -%}
+          {%- assign doc_slug = doc.title | slugify -%}
+          {%- assign active = nil -%}
+
+          {%- if page.group == group_slug and page_slug == doc_slug -%}
+            {%- assign active = 'active bd-sidenav-active' -%}
+          {%- endif -%}
+
+          <li unless active="=" nil class="{{ active }}" endunless>
+            <a href="%7B%7B%20site.baseurl%20%7D%7D/docs/%7B%7B%20site.docs_version%20%7D%7D/%7B%7B%20group_slug%20%7D%7D/%7B%7B%20doc_slug%20%7D%7D/">
+              {{ doc.title }}
+            </a>
+
+            {%- comment -%}
+            {% unless doc.sections == nil %}
+              <ul class="nav">
+                {% for section in doc.sections %}
+                  <li>
+                    <a href="#%7B%7B%20section.title%20%7C%20downcase%20%7C%20replace:%20'%20',%20'-'%20%7D%7D">
+                      {{ section.title }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endunless %}
+            {%- endcomment -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endfor -%}
+</nav>
+</body></html>
